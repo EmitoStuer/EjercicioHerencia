@@ -1,9 +1,9 @@
 import * as rls from 'readline-sync';
 export class Vehiculo{
-    private marca:string;
-    private modelo:string;
-    private patente:string;
-    private anioDeFabricacion:number;
+    protected marca:string;
+    protected modelo:string;
+    protected patente:string;
+    protected anioDeFabricacion:number;
 
     constructor(marca:string,modelo:string,patente:string,anioDeFabricacion:number){
         this.marca = marca;
@@ -38,7 +38,7 @@ export class Vehiculo{
     };
 
     public mostrarDetalle(): void {
-        console.log(`Marca: ${this.marca}. \n Modelo: ${this.modelo}. \n Patente: ${this.patente}. \n Año: ${this.anioDeFabricacion}.`);
+        console.log(`Marca: ${this.marca}. \nModelo: ${this.modelo}. \nPatente: ${this.patente}. \nAño: ${this.anioDeFabricacion}.`);
     }
 
     modificar(): void {
