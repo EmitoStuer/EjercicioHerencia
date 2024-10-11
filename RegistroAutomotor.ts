@@ -32,7 +32,7 @@ export class RegistroAutomotor {
         let opcionSeleccionada: number;
         do {
             opcionSeleccionada = this.menuOpciones(`¿Qué vehículo desea agregar? \n 1 - Auto. \n 2 - Moto. \n 3 - Camión. \n 4 - Salir.`, 1, 4);
-            if (opcionSeleccionada < 4) {
+            if (opcionSeleccionada < 4 && opcionSeleccionada > 0) {
                 this.crearVehiculoPorTipo(opcionSeleccionada);
             }
         } while (opcionSeleccionada !== 4);
@@ -79,6 +79,10 @@ export class RegistroAutomotor {
         let patente: string = rls.question("Ingrese Patente del Vehiculo: ");
         let anioDeFabricacion: number = rls.questionInt("Ingrese Año de Fabricacion: ");
         return { marca, modelo, patente, anioDeFabricacion };
+    }
+
+    private agregarListaVehiculos(vehiculo: Vehiculo): void {
+        this.listaVehiculos.push(vehiculo);
     }
 
     private verVehiculos(): void {
@@ -137,6 +141,13 @@ export class RegistroAutomotor {
         let vehiculoSeleccionado: Vehiculo | undefined = this.listaVehiculos.find(v => v.getPatente() === patente);
         
         if (vehiculoSeleccionado) {
+            let tipoVehiculo = vehiculoSeleccionado.constructor.name; // Obtener el tipo de vehículo como string
+            let tipoSeleccionado = tipo === 1 ? 'Auto' : tipo === 2 ? 'Moto' : 'Camión';
+
+            if (tipoVehiculo !== tipoSeleccionado) {
+                console.log(`El vehículo encontrado es un ${tipoVehiculo}, no un ${tipoSeleccionado}.`);
+                return; // Salir de la función si los tipos no coinciden
+            }else{
             vehiculoSeleccionado.mostrarDetalle();
             let nuevaMarca: string = rls.question("Ingrese nueva marca (o presione Enter para no modificar): ");
             let nuevoModelo: string = rls.question("Ingrese nuevo modelo (o presione Enter para no modificar): ");
@@ -147,6 +158,7 @@ export class RegistroAutomotor {
             if (nuevoAnio !== 0) vehiculoSeleccionado.setAnioDeFabricacion(nuevoAnio);
 
             console.log(`${vehiculoSeleccionado.constructor.name} modificado correctamente`);
+            }
         } else {
             console.log(`No existe un ${tipo === 1 ? 'Auto' : tipo === 2 ? 'Moto' : 'Camión'} con esa Patente`);
         }
@@ -162,11 +174,10 @@ export class RegistroAutomotor {
             }
         } while (opcionSeleccionada !== 4);
     }
-
+/*
     private eliminarVehiculoPorTipo(tipo: number): void {
         let patente: string = rls.question("Ingrese la Patente del Vehículo: ");
         let vehiculoSeleccionado: Vehiculo | undefined = this.listaVehiculos.find(v => v.getPatente() === patente);
-        
         if (vehiculoSeleccionado) {
             vehiculoSeleccionado.mostrarDetalle();
             if (rls.keyInYNStrict(`¿Está seguro que desea eliminar el ${vehiculoSeleccionado.constructor.name}?`)) {
@@ -180,6 +191,45 @@ export class RegistroAutomotor {
         }
         this.esperarEnter();
     }
+*/
+private eliminarVehiculoPorTipo(tipo: number): void {
+    let patente: string = rls.question("Ingrese la Patente del Vehículo: ");
+    
+    // Busca el vehículo en la lista de vehículos por su patente
+    let vehiculoSeleccionado: Vehiculo | undefined = this.listaVehiculos.find(v => v.getPatente() === patente);
+
+    // Verifica si se encontró el vehículo
+    if (vehiculoSeleccionado) {
+        // Verifica si el tipo del vehículo coincide con el tipo ingresado
+        let tipoVehiculo = vehiculoSeleccionado.constructor.name; // Obtener el tipo de vehículo como string
+        let tipoSeleccionado = tipo === 1 ? 'Auto' : tipo === 2 ? 'Moto' : 'Camión';
+
+        if (tipoVehiculo !== tipoSeleccionado) {
+            console.log(`El vehículo encontrado es un ${tipoVehiculo}, no un ${tipoSeleccionado}.`);
+            return; // Salir de la función si los tipos no coinciden
+        }else{
+                    // Muestra los detalles del vehículo seleccionado
+        vehiculoSeleccionado.mostrarDetalle();
+
+        // Pregunta al usuario si está seguro de eliminar el vehículo
+        if (rls.keyInYNStrict(`¿Está seguro que desea eliminar el ${vehiculoSeleccionado.constructor.name}?`)) {
+            // Elimina el vehículo de la lista
+            this.listaVehiculos = this.listaVehiculos.filter(v => v !== vehiculoSeleccionado);
+            console.log(`${vehiculoSeleccionado.constructor.name} eliminado con éxito.`);
+        } else {
+            console.log("Eliminación cancelada.");
+        }
+        }
+
+
+    } else {
+        // Mensaje en caso de que no se encuentre el vehículo
+        console.log(`No existe un ${tipo === 1 ? 'Auto' : tipo === 2 ? 'Moto' : 'Camión'} con esa Patente`);
+    }
+
+    // Espera a que el usuario presione Enter antes de continuar
+    this.esperarEnter();
+}
 
     private menuOpciones(mensaje: string, min: number, max: number): number {
         let opcionSeleccionada: number;
@@ -188,10 +238,6 @@ export class RegistroAutomotor {
             opcionSeleccionada = rls.questionInt("Ingrese la Opcion que Desee: ");
         } while (opcionSeleccionada < min || opcionSeleccionada > max);
         return opcionSeleccionada;
-    }
-
-    private agregarListaVehiculos(vehiculo: Vehiculo): void {
-        this.listaVehiculos.push(vehiculo);
     }
 
     private esperarEnter(): void {
